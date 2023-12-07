@@ -73,8 +73,6 @@ public class AppRunner {
             print("Недопустимая буква. Попрбуйте еще раз.");
             chooseAction(products);
         }
-
-
     }
 
     private void showActions(UniversalArray<Product> products) {
