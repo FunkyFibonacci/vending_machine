@@ -2,8 +2,8 @@ package human;
 
 public class Human {
     private final String name = "Саша";
-    private final int cardCashTotal = 10000;
-    private final int coinsTotal = 300;
+    private int cardCashTotal = 10000;
+    private int coinsTotal = 300;
 
     public String getName() {
         return name;
@@ -15,6 +15,14 @@ public class Human {
 
     public int getCoinsTotal() {
         return coinsTotal;
+    }
+
+    public void setCardCashTotal(int cardCashTotal) {
+        this.cardCashTotal = cardCashTotal;
+    }
+
+    public void setCoinsTotal(int coinsTotal) {
+        this.coinsTotal = coinsTotal;
     }
 }
 
