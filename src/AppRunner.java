@@ -24,7 +24,7 @@ public class AppRunner {
                 new Mars(ActionLetter.F, 80),
                 new Pistachios(ActionLetter.G, 130)
         });
-        coinAcceptor = new CoinAcceptor(100);
+        coinAcceptor = new CoinAcceptor(200);
     }
 
     public static void run() {
@@ -39,12 +39,12 @@ public class AppRunner {
         print("В автомате доступны:");
         showProducts(products);
         print("Монет на сумму: " + coinAcceptor.getAmount());
-        print(" a - пополнить баланс на 20 монет");
+        System.out.println("В кошелке монет: " + human.getCoinsTotal() + "\n");
+        System.out.println(" 0 - пополнить автомат с карты");
+        print(" a - пополнить автомат на 20 монет");
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         allowProducts.addAll(getAllowedProducts().toArray());
         chooseAction(allowProducts);
-        System.out.println("Остаток коинов: " + human.getCoinsTotal() + "\n");
-        System.out.println(" h - поменять способ оплаты");
     }
 
     private UniversalArray<Product> getAllowedProducts() {
@@ -63,6 +63,28 @@ public class AppRunner {
         String action = fromConsole().substring(0, 1);
         try {
             for (int i = 0; i < products.size(); i++) {
+                if (action.equals("a")) {
+                    coinAcceptor.setAmount(coinAcceptor.getAmount() + 20);
+                    System.out.println("Вы выбрали пополнить баланс на 20 монет");
+                    break;
+                }
+                if (action.equals("0")){
+                    System.out.println("Вы выбрали пополнить автомат с карты\nВведите пароль карты: ");
+
+                    String password = fromConsole().trim();
+                    if (password.isEmpty()){
+                        throw new IllegalArgumentException("Ввели пустую строку!");
+                    }
+                    if (password.equals(human.getDemir().getPasswordOfCard())){
+                        System.out.println("Введите сколько монет хоите пополинть: ");
+                        String cashToPay = fromConsole();
+                        int payment = Integer.parseInt(cashToPay);
+                        coinAcceptor.setAmount(coinAcceptor.getAmount()+payment);
+                    } else {
+                        System.out.println("Введен неправильный пароль, вспоминайте(");
+                    }
+                    break;
+                }
                 if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase()))) {
                     coinAcceptor.setAmount(coinAcceptor.getAmount() - products.get(i).getPrice());
                     print("Вы купили " + products.get(i).getName());
@@ -71,13 +93,6 @@ public class AppRunner {
                     isExit = true;
                     break;
                 }
-                if (action.equals("a")){
-                    System.out.println("Вы выбрали пополнить баланс на 20 монет");
-                    coinAcceptor.setAmount(20 + coinAcceptor.getAmount());
-                    human.setCoinsTotal(human.getCoinsTotal() - 20);
-                    break;
-                }
-              
 
             }
         } catch (IllegalArgumentException e) {

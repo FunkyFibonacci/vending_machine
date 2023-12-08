@@ -2,7 +2,7 @@ package human;
 
 public class CardOfHuman {
     private int totalSum = 10000;
-    private String passworOfCard = "clown1234";
+    private final String passworOfCard = "clown1234";
 
     public int getTotalSum() {
         return totalSum;
@@ -12,7 +12,7 @@ public class CardOfHuman {
         this.totalSum = totalSum;
     }
 
-    public String getPassworOfCard() {
+    public String getPasswordOfCard() {
         return passworOfCard;
     }
 
