@@ -87,9 +87,15 @@ public class AppRunner {
 
                     String password = fromConsole().trim();
                     if (password.equals(human.getDemir().getPasswordOfCard())){
+                        if (human.getDemir().getTotalSum()<=0){
+                            throw new Exception("На карте закончились деньги!!!");
+                        }
                         System.out.println("Введите сколько монет хоите пополинть: ");
                         String cashToPay = fromConsole();
                         int payment = Integer.parseInt(cashToPay);
+                        if (payment>human.getDemir().getTotalSum()){
+                            throw new Exception("Введена сумма больше чем на карте!!!");
+                        }
                         coinAcceptor.setAmount(coinAcceptor.getAmount()+payment);
                         human.getDemir().setTotalSum(human.getDemir().getTotalSum()-payment);
                     } else {
@@ -97,6 +103,7 @@ public class AppRunner {
                     }
                     break;
                 }
+
                 if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase()))) {
                     coinAcceptor.setAmount(coinAcceptor.getAmount() - products.get(i).getPrice());
                     print("Вы купили " + products.get(i).getName());
