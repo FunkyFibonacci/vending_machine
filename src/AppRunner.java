@@ -4,6 +4,7 @@ import model.*;
 import util.UniversalArray;
 import util.UniversalArrayImpl;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class AppRunner {
@@ -11,7 +12,7 @@ public class AppRunner {
     private final UniversalArray<Product> products = new UniversalArrayImpl<>();
 
     private final CoinAcceptor coinAcceptor;
-    private Human human = new Human();
+    private static final Human human = new Human();
 
     private static boolean isExit = false;
 
@@ -28,6 +29,8 @@ public class AppRunner {
     }
 
     public static void run() {
+        System.out.println("Здарово " + human.getName() + ", че будем брать?");
+
         AppRunner app = new AppRunner();
 
         while (!isExit) {
@@ -38,10 +41,9 @@ public class AppRunner {
     private void startSimulation() {
         print("В автомате доступны:");
         showProducts(products);
-        print("Монет на сумму: " + coinAcceptor.getAmount());
-        System.out.println("В кошелке монет: " + human.getCoinsTotal() + "\n");
-        System.out.println(" 0 - пополнить автомат с карты");
-        print(" a - пополнить автомат на 20 монет");
+        print("Монет на сумму в автомате: " + coinAcceptor.getAmount());
+        System.out.println("В кошелке монет: " + human.getCoinsTotal());
+        System.out.println("На карте денег: " + human.getDemir().getTotalSum() + "\n");
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         allowProducts.addAll(getAllowedProducts().toArray());
         chooseAction(allowProducts);
@@ -58,13 +60,25 @@ public class AppRunner {
     }
 
     private void chooseAction(UniversalArray<Product> products) {
+        System.out.println(" 0 - пополнить автомат с карты");
+        print(" a - пополнить автомат на 20 монет");
         showActions(products);
         print(" h - Выйти");
-        String action = fromConsole().substring(0, 1);
+        String action = fromConsole().trim().substring(0, 1);
         try {
+
             for (int i = 0; i < products.size(); i++) {
+                if (action.equals("h")) {
+                    isExit = true;
+                    break;
+                }
                 if (action.equals("a")) {
+                    if (human.getCoinsTotal() < 20){
+                        throw new Exception("Закончились монеты!");
+                    }
                     coinAcceptor.setAmount(coinAcceptor.getAmount() + 20);
+                    human.setCoinsTotal(human.getCoinsTotal()-20);
+
                     System.out.println("Вы выбрали пополнить баланс на 20 монет");
                     break;
                 }
@@ -72,31 +86,29 @@ public class AppRunner {
                     System.out.println("Вы выбрали пополнить автомат с карты\nВведите пароль карты: ");
 
                     String password = fromConsole().trim();
-                    if (password.isEmpty()){
-                        throw new IllegalArgumentException("Ввели пустую строку!");
-                    }
                     if (password.equals(human.getDemir().getPasswordOfCard())){
                         System.out.println("Введите сколько монет хоите пополинть: ");
                         String cashToPay = fromConsole();
                         int payment = Integer.parseInt(cashToPay);
                         coinAcceptor.setAmount(coinAcceptor.getAmount()+payment);
+                        human.getDemir().setTotalSum(human.getDemir().getTotalSum()-payment);
                     } else {
-                        System.out.println("Введен неправильный пароль, вспоминайте(");
+                        throw new Exception("Неправильный пароль!");
                     }
                     break;
                 }
                 if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase()))) {
                     coinAcceptor.setAmount(coinAcceptor.getAmount() - products.get(i).getPrice());
                     print("Вы купили " + products.get(i).getName());
-                    break;
-                } else if ("h".equalsIgnoreCase(action)) {
-                    isExit = true;
+                    System.out.println("===========================");
                     break;
                 }
-
             }
         } catch (IllegalArgumentException e) {
-            print("Недопустимая буква. Попрбуйте еще раз.");
+            print("Недопустимая буква, или пустая строка, или не парсится. Попрбуйте еще раз.");
+            chooseAction(products);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             chooseAction(products);
         }
     }

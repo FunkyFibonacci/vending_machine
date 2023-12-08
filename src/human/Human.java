@@ -9,9 +9,16 @@ public class Human {
         return coinsTotal;
     }
 
+    public void setCoinsTotal(int coinsTotal) {
+        this.coinsTotal = coinsTotal;
+    }
+
     public CardOfHuman getDemir() {
         return demir;
     }
 
+    public String getName() {
+        return "Саша";
+    }
 }
 

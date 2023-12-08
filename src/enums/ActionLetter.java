@@ -1,7 +1,6 @@
 package enums;
 
 public enum ActionLetter {
-    A("a"),
     B("b"),
     C("c"),
     D("d"),
@@ -9,7 +8,7 @@ public enum ActionLetter {
     F("f"),
     G("g");
 
-    private String value;
+    private final String value;
 
     ActionLetter(String value) {
         this.value = value;
