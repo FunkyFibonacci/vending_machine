@@ -1,4 +1,5 @@
 import enums.ActionLetter;
+import human.Human;
 import model.*;
 import util.UniversalArray;
 import util.UniversalArrayImpl;
@@ -10,6 +11,7 @@ public class AppRunner {
     private final UniversalArray<Product> products = new UniversalArrayImpl<>();
 
     private final CoinAcceptor coinAcceptor;
+    private Human human = new Human();
 
     private static boolean isExit = false;
 
@@ -27,6 +29,7 @@ public class AppRunner {
 
     public static void run() {
         AppRunner app = new AppRunner();
+
         while (!isExit) {
             app.startSimulation();
         }
@@ -35,13 +38,13 @@ public class AppRunner {
     private void startSimulation() {
         print("В автомате доступны:");
         showProducts(products);
-
         print("Монет на сумму: " + coinAcceptor.getAmount());
-
+        print(" a - пополнить баланс на 20 монет");
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         allowProducts.addAll(getAllowedProducts().toArray());
         chooseAction(allowProducts);
-
+        System.out.println("Остаток коинов: " + human.getCoinsTotal() + "\n");
+        System.out.println(" h - поменять способ оплаты");
     }
 
     private UniversalArray<Product> getAllowedProducts() {
@@ -68,6 +71,14 @@ public class AppRunner {
                     isExit = true;
                     break;
                 }
+                if (action.equals("a")){
+                    System.out.println("Вы выбрали пополнить баланс на 20 монет");
+                    coinAcceptor.setAmount(20 + coinAcceptor.getAmount());
+                    human.setCoinsTotal(human.getCoinsTotal() - 20);
+                    break;
+                }
+              
+
             }
         } catch (IllegalArgumentException e) {
             print("Недопустимая буква. Попрбуйте еще раз.");
